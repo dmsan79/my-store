@@ -1,5 +1,5 @@
 const { faker } = require('@faker-js/faker');
-const boom = require('@hspi/boom');
+const boom = require('@hapi/boom');
 
 class ProductsService {
 
@@ -16,6 +16,7 @@ class ProductsService {
         name: faker.commerce.productName(),
         price: parseInt(faker.commerce.price(), 10),
         image: faker.image.avatar(),
+        isBlock: faker.datatype.boolean(),
       });
     }
   }
@@ -38,9 +39,12 @@ class ProductsService {
   }
 
   async findOne(id){
-    const product = this.products.find(item => item.id ===id);
+    const product = this.products.find(item => item.id === id);
     if(!product) {
       throw boom.notFound('product not found');
+    }
+    if (product.isBlock) {
+      throw boom.conflict('product is block')
     }
     return product;
   }
